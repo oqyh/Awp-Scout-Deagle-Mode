@@ -54,10 +54,10 @@ sm_disable_knife_damage "1"
 // Default: "1"
 sm_disable_scope "1"
 
-// Remove Buy Zone || 1= Yes || 0= No
+// Disable Buy Zone || 1= Yes || 0= No
 // -
 // Default: "1"
-sm_remove_buyzone "1"
+sm_disable_buyzone "1"
 
 // Delete Drop Weapons || 1= Yes || 0= No
 // -
