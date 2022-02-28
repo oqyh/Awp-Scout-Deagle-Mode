@@ -5,11 +5,11 @@ https://forums.alliedmods.net/showthread.php?t=336242
 
 ![alt text](https://github.com/oqyh/Awp-Scout-Deagle-Mode/blob/main/images/1.png?raw=true)
 
-![alt text](https://github.com/oqyh/Game_Manager/blob/main/images/2.png?raw=true)
+![alt text](https://github.com/oqyh/Awp-Scout-Deagle-Mode/blob/main/images/2.png?raw=true)
 
-![alt text](https://github.com/oqyh/Game_Manager/blob/main/images/3.png?raw=true)
+![alt text](https://github.com/oqyh/Awp-Scout-Deagle-Mode/blob/main/images/3.png?raw=true)
 
-![alt text](https://github.com/oqyh/Game_Manager/blob/main/images/4.png?raw=true)
+![alt text](https://github.com/oqyh/Awp-Scout-Deagle-Mode/blob/main/images/4.png?raw=true)
 
 
 ## .:[ ConVars ]:.
