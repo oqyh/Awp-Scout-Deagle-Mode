@@ -1,5 +1,5 @@
 # [CSGO] Awp Scout Deagle Knife (1.0.0)
-https://forums.alliedmods.net/showthread.php?t=336242
+https://forums.alliedmods.net/showthread.php?p=2772764
 
 ### Game Manager ( Awp, Scout, Deagle, Knife, And More )
 
