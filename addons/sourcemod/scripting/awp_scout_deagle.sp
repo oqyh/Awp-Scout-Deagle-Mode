@@ -24,7 +24,7 @@ ConVar g_deletemapweapons;
 ConVar g_deletedropweapons;
 ConVar g_oneshotawp;
 ConVar g_awp_scout;
-
+ConVar g_falldamage;
 
 g_bKnifeDamage = false;
 g_bnoawpscope = false;
@@ -38,26 +38,28 @@ public Plugin:myinfo =
 	name = "Awp / Scout / Deagle / Knife Mode",
 	author = "Gold_KingZ",
 	description = "Scout Awp Deagle Knife Mode",
-	version = "1.0.0",
+	version = "1.0.1",
 	url = "https://steamcommunity.com/id/oQYh"
 }
 
 
 public OnPluginStart()
 {
+	LoadTranslations( "awp_scout_deagle.phrases" );
 	Format(CfgFile, sizeof(CfgFile), "sourcemod/%s.cfg", CFG_NAME);
 	
 	g_awp_scout = CreateConVar( "sm_awp_or_scout", "1", "Force Give Knife / Awp / Scout / Deagle || 0= Knife Only || 1= Awp || 2= Scout || 3= Deagle Only (sm_give_deagle)");
-	g_oneshotawp = CreateConVar("sm_oneshot_awp", "1", "Enable One Shot Awp Kill ( leg shot ) || 1= Yes || 0= No");
-	g_givedeagle = CreateConVar( "sm_give_deagle", "1", "Force Give Deagle || 1= Yes || 0= No");
-	g_deagleonebullet = CreateConVar( "sm_deagle_onebullet", "1", "Deagle One Bullet || 1= Yes || 0= No");
-	g_deaglehsonly = CreateConVar( "sm_deagle_hsonly", "1", "Deagle Head Shot Only || 1= Yes || 0= No");
-	g_scouthsonly = CreateConVar( "sm_scout_hsonly", "1", "Scout Head Shot Only || 1= Yes || 0= No");
-	g_removebuyzone = CreateConVar( "sm_disable_buyzone", "1", "Disable Buy Zone || 1= Yes || 0= No");
-	g_noscope = CreateConVar( "sm_disable_scope", "1", "Disable Scope || 1= Yes || 0= No");
-	g_disableknife = CreateConVar("sm_disable_knife_damage", "1", "Disable Knife Damage || 1= Yes || 0= No");
-	g_deletemapweapons = CreateConVar("sm_delete_map_weapons", "1", "Delete Map Weapons || 1= Yes || 0= No");
-	g_deletedropweapons = CreateConVar("sm_delete_drop_weapons", "1", "Delete Drop Weapons || 1= Yes || 0= No");
+	g_oneshotawp = CreateConVar("sm_oneshot_awp", "1", "Enable One Shot Awp Kill ( leg shot ) || 1= Yes || 0= No", _, true, 0.0, true, 1.0);
+	g_givedeagle = CreateConVar( "sm_give_deagle", "1", "Force Give Deagle || 1= Yes || 0= No", _, true, 0.0, true, 1.0);
+	g_deagleonebullet = CreateConVar( "sm_deagle_onebullet", "1", "Deagle One Bullet || 1= Yes || 0= No", _, true, 0.0, true, 1.0);
+	g_deaglehsonly = CreateConVar( "sm_deagle_hsonly", "1", "Deagle Head Shot Only || 1= Yes || 0= No", _, true, 0.0, true, 1.0);
+	g_scouthsonly = CreateConVar( "sm_scout_hsonly", "1", "Scout Head Shot Only || 1= Yes || 0= No", _, true, 0.0, true, 1.0);
+	g_removebuyzone = CreateConVar( "sm_disable_buyzone", "1", "Disable Buy Zone || 1= Yes || 0= No", _, true, 0.0, true, 1.0);
+	g_noscope = CreateConVar( "sm_disable_scope", "1", "Disable Scope || 1= Yes || 0= No", _, true, 0.0, true, 1.0);
+	g_disableknife = CreateConVar("sm_disable_knife_damage", "1", "Disable Knife Damage || 1= Yes || 0= No", _, true, 0.0, true, 1.0);
+	g_deletemapweapons = CreateConVar("sm_delete_map_weapons", "1", "Delete Map Weapons || 1= Yes || 0= No", _, true, 0.0, true, 1.0);
+	g_deletedropweapons = CreateConVar("sm_delete_drop_weapons", "1", "Delete Drop Weapons || 1= Yes || 0= No", _, true, 0.0, true, 1.0);
+	g_falldamage = CreateConVar("sm_disable_falldamage", "1", "Disable Fall Damage || 1= Yes || 0= No", _, true, 0.0, true, 1.0);
 
 	HookEvent( "player_spawn",	Event_PlayerAwp);
 	HookConVarChange(g_disableknife, OnSettingsChanged);
@@ -83,7 +85,6 @@ public OnPluginStart()
 	}
 
 	LoadCfg();
-	
 }
 
 void LoadCfg()
@@ -93,13 +94,33 @@ void LoadCfg()
 
 public void OnMapStart()
 {
-    if(g_deletemapweapons.BoolValue)
-        ServerCommand("sm_cvar mp_weapons_allow_map_placed 0");
-		
-	if(g_deletedropweapons.BoolValue)
+    if(!g_deletemapweapons.BoolValue)
 	{
-	SetCvarInt("weapon_auto_cleanup_time", 5);
-	SetCvarInt("weapon_max_before_cleanup", 5);
+        ServerCommand("sm_cvar mp_weapons_allow_map_placed 1");
+	}
+	else
+	{
+        ServerCommand("sm_cvar mp_weapons_allow_map_placed 0");
+	}
+	
+	if (!g_falldamage.BoolValue)
+	{
+		ServerCommand("sm_cvar sv_falldamage_scale 1");
+	}
+	else
+	{
+		ServerCommand("sm_cvar sv_falldamage_scale 0");
+	}
+	
+	if(!g_deletedropweapons.BoolValue)
+	{
+		SetCvarInt("weapon_auto_cleanup_time", 0);
+		SetCvarInt("weapon_max_before_cleanup", 0);
+	}
+	else
+	{
+		SetCvarInt("weapon_auto_cleanup_time", 5);
+		SetCvarInt("weapon_max_before_cleanup", 5);
 	}
 }
 
@@ -222,7 +243,7 @@ if (g_bnoawpscope)
 		if (IsClientInGame(client) && IsPlayerAlive(client) && !IsFakeClient(client)) {
 			int ent = GetPlayerWeaponSlot(client, 0);
 			CS_DropWeapon(client, ent, true, true);
-			CPrintToChat(client, "{darkred}Scope Is NOT Allowed!");
+			CPrintToChat(client, "%t","NoScope");
 	}
 }
 }
