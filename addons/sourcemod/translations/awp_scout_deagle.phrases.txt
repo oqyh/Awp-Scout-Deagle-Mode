@@ -1,0 +1,9 @@
+"Phrases"
+{
+	"NoScope"
+	{
+		"en"			"{darkred}Scope Is NOT Allowed!"
+		"pt"			"{darkred}Escopo NÃO é permitido!"
+		"ru"			"{darkred}Область применения НЕ разрешена!"
+	}
+}
